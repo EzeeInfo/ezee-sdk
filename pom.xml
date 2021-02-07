@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.rentmanager.client</groupId>
+    <artifactId>rentmanager-java-sdk</artifactId>
+    <version>1.2-SNAPSHOT</version>
+
+    <scm>
+        <url>scm:git:https://github.com/techatpark/rentmanager-java-sdk.git</url>
+        <connection>scm:git:https://sathishk@github.com/techatpark/rentmanager-java-sdk.git</connection>
+        <developerConnection>scm:git:https://sathishk@github.com/techatpark/rentmanager-java-sdk.git</developerConnection>
+      <tag>HEAD</tag>
+  </scm>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>11</java.version>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.11.0</version>
+        </dependency>
+
+    </dependencies>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub OWNER Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/techatpark/rentmanager-java-sdk</url>
+        </repository>
+    </distributionManagement>
+
+
+</project>
