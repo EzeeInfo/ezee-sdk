@@ -75,7 +75,47 @@ public class CommerceService {
         return stations;
     }
 
+    public Map<String,List<String>> getRoute() throws IOException, InterruptedException {
 
+        Map<String,List<String>> routesMap = null;
+
+        StringBuilder routeUrl = new StringBuilder(this.url + "/" + this.token + "/commerce/route");
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(routeUrl.toString()))
+                .setHeader("Content-Type", "application/json")
+                .build();
+
+        HttpResponse<String> response = this.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        //send request
+        int responseCode = response.statusCode();
+
+        //if successful
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+
+
+            try (JsonParser jsonParser = objectMapper.getFactory()
+                    .createParser(response.body())) {
+                jsonParser.nextToken();
+                while (jsonParser.nextToken() != JsonToken.START_OBJECT) {
+
+                }
+                Map<String,List<String>> rM = new HashMap<>();
+                while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
+                    Map<String,List<String>> route = objectMapper
+                            .readValue(jsonParser, Map.class);
+
+                    route.entrySet().forEach(entry-> {
+                        rM.put(entry.getKey(),entry.getValue());
+                    });
+
+                }
+                routesMap = rM;
+            }
+
+        }
+        return routesMap;
+    }
 
     private void handleException(HttpResponse<String> response) throws JsonProcessingException, BusManagerClientException, BusManagerServerException {
 

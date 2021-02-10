@@ -19,7 +19,7 @@ class BusManagerTest {
 
         CommerceService commerceService = busManager.commerceService();
 
-        System.out.println(commerceService.getStations());
+        System.out.println(commerceService.getRoute());
     }
 
 
