@@ -20,13 +20,9 @@ public class BusManager {
     private final HttpClient httpClient;
 
     private BusManager(String url, String namespaceCode,
-                       String userName,
-                       String password,
                        ObjectMapper objectMapper) throws IOException, InterruptedException {
         assert url != null : "URL Required";
         assert namespaceCode != null : "Namespace Code Required";
-        assert userName != null : "UserName Required";
-        assert password != null : "Password Required";
         this.objectMapper = objectMapper == null ? new ObjectMapper() : objectMapper;
 
         this.url = url;
@@ -34,7 +30,7 @@ public class BusManager {
                 .version(HttpClient.Version.HTTP_1_1)
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();
-        this.token = getToken(namespaceCode,userName, password);
+        this.token = getToken(namespaceCode);
     }
 
     public static BusManagerBuilder newBusManagerBuilder() {
@@ -42,12 +38,12 @@ public class BusManager {
     }
 
 
-    private String getToken(String namespaceCode,String userName, String password) throws IOException, InterruptedException {
+    private String getToken(String namespaceCode) throws IOException, InterruptedException {
         String token = null;
 
         //Connection created
 
-        final StringBuilder authUrl = new StringBuilder(this.url + "/auth/getAuthToken?namespaceCode="+namespaceCode+"&username="+userName+"&password="+password+"&devicemedium=WEB&authenticationTypeCode=BITSUP");
+        final StringBuilder authUrl = new StringBuilder(this.url + "/auth/getGuestAuthToken?namespaceCode="+namespaceCode+"&devicemedium=WEB&authenticationTypeCode=BITSUP");
 
 
         //set header
@@ -81,8 +77,6 @@ public class BusManager {
 
     public static class BusManagerBuilder {
         private String url = System.getenv("BUSMANAGER_URL");
-        private String userName = System.getenv("BUSMANAGER_USERNAME");
-        private String password = System.getenv("BUSMANAGER_PASSWORD");
         private String namespaceCode = System.getenv("BUSMANAGER_NAMESPACECODE");
 
         private ObjectMapper objectMapper;
@@ -92,20 +86,13 @@ public class BusManager {
             return this;
         }
 
-        public BusManagerBuilder userName(String userName) {
-            this.userName = userName;
-            return this;
-        }
 
         public BusManagerBuilder namespaceCode(String namespaceCode) {
             this.namespaceCode = namespaceCode;
             return this;
         }
 
-        public BusManagerBuilder password(String password) {
-            this.password = password;
-            return this;
-        }
+
 
 
         public BusManagerBuilder objectMapper(ObjectMapper objectMapper) {
@@ -115,7 +102,7 @@ public class BusManager {
 
         public BusManager build() throws BusManagerException {
             try {
-                return new BusManager(url, namespaceCode,userName, password, objectMapper);
+                return new BusManager(url, namespaceCode, objectMapper);
             } catch (IOException | InterruptedException e) {
                 throw new BusManagerException("Unable to create BusManager", e);
             }

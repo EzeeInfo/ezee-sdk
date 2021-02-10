@@ -11,10 +11,6 @@ class BusManagerTest {
     void testCreation() throws BusManagerException, IOException, InterruptedException {
 
         BusManager busManager = BusManager.newBusManagerBuilder()
-                .url("http://app.ezeebits.com/busservices")
-                .namespaceCode("demobo")
-                .userName("kdemo")
-                .password("newnew123")
                 .build();
 
         CommerceService commerceService = busManager.commerceService();
