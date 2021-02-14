@@ -1,29 +1,23 @@
 package com.ezeeinfo.client;
 
 import com.ezeeinfo.client.model.Station;
+import com.ezeeinfo.client.model.Trip;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ezeeinfo.exception.BusManagerClientException;
 import com.ezeeinfo.exception.BusManagerException;
 import com.ezeeinfo.exception.BusManagerServerException;
 
-import java.beans.JavaBean;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public class CommerceService {
 
@@ -41,8 +35,7 @@ public class CommerceService {
 
     }
 
-    public List<Station> getStations() throws IOException, InterruptedException, BusManagerException {
-        //String stations = null ;
+    public List<Station> getStations() throws IOException, InterruptedException {
         List<Station> stations = null;
         StringBuilder stationUrl = new StringBuilder(this.url + "/"+this.token+"/commerce/station");
 
@@ -57,8 +50,6 @@ public class CommerceService {
 
         //if successful
         if (responseCode == HttpURLConnection.HTTP_OK) {
-
-
             try (JsonParser jsonParser = objectMapper.getFactory()
                     .createParser(response.body())) {
                 while (jsonParser.nextToken() != JsonToken.START_ARRAY) {
@@ -70,7 +61,6 @@ public class CommerceService {
                             .readValue(jsonParser, Station.class));
                 }
             }
-
         }
         return stations;
     }
@@ -115,6 +105,47 @@ public class CommerceService {
 
         }
         return routesMap;
+    }
+
+    public List<Trip> getTrips(final String fromStationCode, final String toStationCode, final LocalDate journeyDate) throws IOException, InterruptedException {
+        List<Trip> trips = null;
+        String monnth = String.valueOf(journeyDate.getMonth().getValue());
+        if(monnth.length() == 1) {
+            monnth = "0"+monnth;
+        }
+
+        String dayOfMonth = String.valueOf(journeyDate.getDayOfMonth());
+        if(dayOfMonth.length() == 1) {
+            dayOfMonth = "0"+monnth;
+        }
+
+        StringBuilder stationUrl =
+                new StringBuilder(this.url + "/"+this.token+"/commerce/search/"+fromStationCode+"/"+toStationCode+"/"+journeyDate.getYear()+"-"+monnth+"-"+dayOfMonth);
+        System.out.println(stationUrl);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(stationUrl.toString()))
+                .setHeader("Content-Type", "application/json")
+                .build();
+
+        HttpResponse<String> response = this.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        //send request
+        int responseCode = response.statusCode();
+
+        //if successful
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            try (JsonParser jsonParser = objectMapper.getFactory()
+                    .createParser(response.body())) {
+                while (jsonParser.nextToken() != JsonToken.START_ARRAY) {
+
+                }
+                trips = new ArrayList<>();
+                while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
+                    trips.add(objectMapper
+                            .readValue(jsonParser, Trip.class));
+                }
+            }
+        }
+        return trips;
     }
 
     private void handleException(HttpResponse<String> response) throws JsonProcessingException, BusManagerClientException, BusManagerServerException {

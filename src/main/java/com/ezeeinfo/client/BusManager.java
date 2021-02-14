@@ -66,7 +66,6 @@ public class BusManager {
                 token = (String) ((Map<String, Object>) map.get("data")).get("authToken");
             }
         }
-        System.out.println("Token is " + token);
         return token;
 
     }
