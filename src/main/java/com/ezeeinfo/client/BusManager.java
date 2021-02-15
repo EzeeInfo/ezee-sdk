@@ -18,51 +18,47 @@ public class BusManager {
     private final String token;
     private final ObjectMapper objectMapper;
     private final HttpClient httpClient;
+    private final CommerceService commerceService;
 
-    private BusManager(String url, String namespaceCode,
-                       ObjectMapper objectMapper) throws IOException, InterruptedException {
+    private BusManager(String url, String namespaceCode, ObjectMapper objectMapper)
+            throws IOException, InterruptedException {
         assert url != null : "URL Required";
         assert namespaceCode != null : "Namespace Code Required";
         this.objectMapper = objectMapper == null ? new ObjectMapper() : objectMapper;
 
         this.url = url;
-        this.httpClient = HttpClient.newBuilder()
-                .version(HttpClient.Version.HTTP_1_1)
-                .connectTimeout(Duration.ofSeconds(10))
-                .build();
+        this.httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1)
+                .connectTimeout(Duration.ofSeconds(10)).build();
         this.token = getToken(namespaceCode);
+        this.commerceService = new CommerceService(url, token, objectMapper == null ? new ObjectMapper() : objectMapper,
+                httpClient);
     }
 
     public static BusManagerBuilder newBusManagerBuilder() {
         return new BusManagerBuilder();
     }
 
-
     private String getToken(String namespaceCode) throws IOException, InterruptedException {
         String token = null;
 
-        //Connection created
+        // Connection created
 
-        final StringBuilder authUrl = new StringBuilder(this.url + "/auth/getGuestAuthToken?namespaceCode="+namespaceCode+"&devicemedium=WEB&authenticationTypeCode=BITSUP");
+        final StringBuilder authUrl = new StringBuilder(this.url + "/auth/getGuestAuthToken?namespaceCode="
+                + namespaceCode + "&devicemedium=WEB&authenticationTypeCode=BITSUP");
 
-
-        //set header
-        HttpRequest request = HttpRequest.newBuilder()
-                .POST(HttpRequest.BodyPublishers.ofString(""))
-                .uri(URI.create(authUrl.toString()))
-                .setHeader("Content-Type", "application/json")
-                .build();
-
+        // set header
+        HttpRequest request = HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofString(""))
+                .uri(URI.create(authUrl.toString())).setHeader("Content-Type", "application/json").build();
 
         HttpResponse<String> response = this.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        //send request
+        // send request
         int responseCode = response.statusCode();
 
-        //if successful
+        // if successful
         if (responseCode == HttpURLConnection.HTTP_OK) {
             Map<String, Object> map = objectMapper.readValue(response.body(), Map.class);
-            if( (Integer) map.get("status") == 1) {
+            if ((Integer) map.get("status") == 1) {
                 token = (String) ((Map<String, Object>) map.get("data")).get("authToken");
             }
         }
@@ -71,7 +67,7 @@ public class BusManager {
     }
 
     public CommerceService commerceService() throws BusManagerException {
-        return new CommerceService( url, token, objectMapper, httpClient);
+        return this.commerceService;
     }
 
     public static class BusManagerBuilder {
@@ -85,14 +81,10 @@ public class BusManager {
             return this;
         }
 
-
         public BusManagerBuilder namespaceCode(String namespaceCode) {
             this.namespaceCode = namespaceCode;
             return this;
         }
-
-
-
 
         public BusManagerBuilder objectMapper(ObjectMapper objectMapper) {
             this.objectMapper = objectMapper;

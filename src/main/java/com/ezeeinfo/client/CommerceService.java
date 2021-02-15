@@ -7,7 +7,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ezeeinfo.exception.BusManagerClientException;
-import com.ezeeinfo.exception.BusManagerException;
 import com.ezeeinfo.exception.BusManagerServerException;
 
 import java.io.IOException;
@@ -19,7 +18,7 @@ import java.net.http.HttpResponse;
 import java.time.LocalDate;
 import java.util.*;
 
-public class CommerceService {
+public final class  CommerceService {
 
     private final ObjectMapper objectMapper;
     private final String url;
