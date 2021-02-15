@@ -76,7 +76,7 @@ public class BusManager {
 
         private ObjectMapper objectMapper;
 
-        BusManagerBuilder url(String url) {
+        public BusManagerBuilder url(String url) {
             this.url = url;
             return this;
         }
