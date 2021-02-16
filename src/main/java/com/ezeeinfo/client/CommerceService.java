@@ -147,6 +147,38 @@ public final class  CommerceService {
         return trips;
     }
 
+
+    public String getBusMap(final String tripCode,final String fromStationCode, final String toStationCode, final LocalDate journeyDate) throws IOException, InterruptedException {
+        String busMap = null;
+        String monnth = String.valueOf(journeyDate.getMonth().getValue());
+        if(monnth.length() == 1) {
+            monnth = "0"+monnth;
+        }
+
+        String dayOfMonth = String.valueOf(journeyDate.getDayOfMonth());
+        if(dayOfMonth.length() == 1) {
+            dayOfMonth = "0"+monnth;
+        }
+
+        StringBuilder stationUrl =
+                new StringBuilder(this.url + "/"+this.token+"/commerce/busmap/"+tripCode+"/"+fromStationCode+"/"+toStationCode+"/"+journeyDate.getYear()+"-"+monnth+"-"+dayOfMonth);
+        System.out.println(stationUrl);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(stationUrl.toString()))
+                .setHeader("Content-Type", "application/json")
+                .build();
+
+        HttpResponse<String> response = this.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        //send request
+        int responseCode = response.statusCode();
+
+        //if successful
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            busMap = response.body();
+        }
+        return busMap;
+    }
+
     private void handleException(HttpResponse<String> response) throws JsonProcessingException, BusManagerClientException, BusManagerServerException {
 
         Map<String, Object> errorResponse = objectMapper.readValue(response.body(), Map.class);
