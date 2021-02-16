@@ -1,6 +1,4 @@
-package com.ezeeinfo.client.model;
-
-import java.util.Objects;
+package com.ezeeinfo.model;
 
 public class BusSeatType {
  

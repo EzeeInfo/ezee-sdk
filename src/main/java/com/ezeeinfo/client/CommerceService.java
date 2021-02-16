@@ -1,7 +1,7 @@
 package com.ezeeinfo.client;
 
-import com.ezeeinfo.client.model.Station;
-import com.ezeeinfo.client.model.Trip;
+import com.ezeeinfo.model.Station;
+import com.ezeeinfo.model.Trip;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;

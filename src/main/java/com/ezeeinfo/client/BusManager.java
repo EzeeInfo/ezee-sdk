@@ -19,6 +19,7 @@ public class BusManager {
     private final ObjectMapper objectMapper;
     private final HttpClient httpClient;
     private final CommerceService commerceService;
+    private final UserService userService;
 
     private BusManager(String url, String namespaceCode, ObjectMapper objectMapper)
             throws IOException, InterruptedException {
@@ -31,6 +32,8 @@ public class BusManager {
                 .connectTimeout(Duration.ofSeconds(10)).build();
         this.token = getToken(namespaceCode);
         this.commerceService = new CommerceService(url, token, objectMapper == null ? new ObjectMapper() : objectMapper,
+                httpClient);
+        this.userService = new UserService(url, token, objectMapper == null ? new ObjectMapper() : objectMapper,
                 httpClient);
     }
 
@@ -68,6 +71,10 @@ public class BusManager {
 
     public CommerceService commerceService() throws BusManagerException {
         return this.commerceService;
+    }
+
+    public UserService userService() throws BusManagerException {
+        return this.userService;
     }
 
     public static class BusManagerBuilder {

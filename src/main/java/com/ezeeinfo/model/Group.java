@@ -1,4 +1,4 @@
-package com.ezeeinfo.client.model;
+package com.ezeeinfo.model;
 
 public class Group {
     private Integer activeFlag;

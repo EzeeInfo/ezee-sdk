@@ -1,4 +1,4 @@
-package com.ezeeinfo.client.model;
+package com.ezeeinfo.model;
 
 import java.util.List;
 

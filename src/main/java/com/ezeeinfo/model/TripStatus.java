@@ -1,12 +1,13 @@
-package com.ezeeinfo.client.model;
+package com.ezeeinfo.model;
 
-public class SeatStatus {
+public class TripStatus {
+
     private String code;
     private String name;
     private Integer activeFlag;
 
     public String getCode() {
-        return this.code;
+        return code;
     }
 
     public void setCode(String code) {
@@ -14,16 +15,7 @@ public class SeatStatus {
     }
 
     public String getName() {
-        return this.name;
-    }
-
-    @Override
-    public String toString() {
-        return "{" +
-            " code='" + getCode() + "'" +
-            ", name='" + getName() + "'" +
-            ", activeFlag='" + getActiveFlag() + "'" +
-            "}";
+        return name;
     }
 
     public void setName(String name) {
@@ -31,11 +23,10 @@ public class SeatStatus {
     }
 
     public Integer getActiveFlag() {
-        return this.activeFlag;
+        return activeFlag;
     }
 
     public void setActiveFlag(Integer activeFlag) {
         this.activeFlag = activeFlag;
     }
-
 }
