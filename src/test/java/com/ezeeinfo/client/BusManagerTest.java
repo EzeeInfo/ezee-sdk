@@ -19,8 +19,7 @@ class BusManagerTest {
                 .build();
 
         UserService userService = busManager.userService();
-        System.out.println(userService.generateOtp("9940379373"));
-       //System.out.println(userService.verifyOtp(413775,"9901002834"));
+
 
 //        CommerceService commerceService = busManager.commerceService();
 //
