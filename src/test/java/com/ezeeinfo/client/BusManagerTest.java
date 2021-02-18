@@ -21,10 +21,13 @@ class BusManagerTest {
         UserService userService = busManager.userService();
 
 
-//        CommerceService commerceService = busManager.commerceService();
-//
-//        //System.out.println(commerceService.getRoute());
-//
+        CommerceService commerceService = busManager.commerceService();
+
+        System.out.println(commerceService.getPoints());
+
+
+        //System.out.println(commerceService.getRoute());
+
 //        LocalDate jouneyDate = LocalDate.now().plusDays(2);
 //
 //        List<Trip> trips = commerceService.getTrips("STG8UJZ140","STF3OEX206", jouneyDate);

@@ -1,5 +1,6 @@
 package com.ezeeinfo.client;
 
+import com.ezeeinfo.model.Point;
 import com.ezeeinfo.model.Station;
 import com.ezeeinfo.model.Trip;
 import com.fasterxml.jackson.core.JsonParser;
@@ -17,6 +18,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public final class  CommerceService {
 
@@ -32,6 +34,22 @@ public final class  CommerceService {
         this.token = token;
         this.httpClient = httpClient;
 
+    }
+
+    public List<Point> getPoints() throws IOException, InterruptedException {
+
+        final List<Station> stations = getStations();
+        final Map<String,List<String>> routesMap = getRoute();
+
+        return stations.stream().map(fromStation -> {
+            List<String> toStationCodes = routesMap.get(fromStation.getCode());
+            List<Station> to = toStationCodes == null ? new ArrayList<>() :
+                    toStationCodes.stream()
+                    .map( sCode-> stations.stream().filter(toStation->{
+                return toStation.getCode().equals(sCode);
+            }).findFirst().get()).collect(Collectors.toList());
+            return new Point(fromStation,to);
+        }).collect(Collectors.toList());
     }
 
     public List<Station> getStations() throws IOException, InterruptedException {
@@ -203,4 +221,6 @@ public final class  CommerceService {
             throw rentManagerServerException;
         }
     }
+
+
 }

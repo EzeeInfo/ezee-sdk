@@ -3,8 +3,6 @@ package com.ezeeinfo.client;
 import com.ezeeinfo.exception.BusManagerClientException;
 import com.ezeeinfo.exception.BusManagerServerException;
 import com.ezeeinfo.model.Authorization;
-import com.ezeeinfo.model.Station;
-import com.ezeeinfo.model.Trip;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
@@ -16,8 +14,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +26,6 @@ public final class UserService {
     private final HttpClient httpClient;
 
     UserService(String url, String token, ObjectMapper objectMapper, HttpClient httpClient) {
-
         this.objectMapper = objectMapper;
         this.url = url;
         this.token = token;
@@ -39,7 +34,6 @@ public final class UserService {
     }
     public String generateOtp(final String mobileNumber) throws IOException, InterruptedException {
         String busMap = null;
-
 
         StringBuilder stationUrl =
                 new StringBuilder(this.url + "/auth/"+this.token+"/customer/" + mobileNumber + "/otp/generate");
