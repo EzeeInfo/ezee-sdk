@@ -20,14 +20,14 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public final class  CommerceService {
+public final class CommerceService {
 
     private final ObjectMapper objectMapper;
     private final String url;
     private final String token;
     private final HttpClient httpClient;
 
-    CommerceService(String url, String token, ObjectMapper objectMapper, HttpClient httpClient) {
+    CommerceService(final String url, final String token, final ObjectMapper objectMapper, final HttpClient httpClient) {
 
         this.objectMapper = objectMapper;
         this.url = url;
@@ -36,7 +36,7 @@ public final class  CommerceService {
 
     }
 
-    public List<Point> getPoints() throws IOException, InterruptedException {
+    public final List<Point> getPoints() throws IOException, InterruptedException {
 
         final List<Station> stations = getStations();
         final Map<String,List<String>> routesMap = getRoute();
@@ -52,7 +52,7 @@ public final class  CommerceService {
         }).collect(Collectors.toList());
     }
 
-    public List<Station> getStations() throws IOException, InterruptedException {
+    public final List<Station> getStations() throws IOException, InterruptedException {
         List<Station> stations = null;
         StringBuilder stationUrl = new StringBuilder(this.url + "/"+this.token+"/commerce/station");
 
@@ -82,7 +82,7 @@ public final class  CommerceService {
         return stations;
     }
 
-    public Map<String,List<String>> getRoute() throws IOException, InterruptedException {
+    public final Map<String,List<String>> getRoute() throws IOException, InterruptedException {
 
         Map<String,List<String>> routesMap = null;
 
@@ -99,8 +99,6 @@ public final class  CommerceService {
 
         //if successful
         if (responseCode == HttpURLConnection.HTTP_OK) {
-
-
             try (JsonParser jsonParser = objectMapper.getFactory()
                     .createParser(response.body())) {
                 jsonParser.nextToken();
@@ -124,7 +122,7 @@ public final class  CommerceService {
         return routesMap;
     }
 
-    public List<Trip> getTrips(final String fromStationCode, final String toStationCode, final LocalDate journeyDate) throws IOException, InterruptedException {
+    public final List<Trip> getTrips(final String fromStationCode, final String toStationCode, final LocalDate journeyDate) throws IOException, InterruptedException {
         List<Trip> trips = null;
         String monnth = String.valueOf(journeyDate.getMonth().getValue());
         if(monnth.length() == 1) {
@@ -166,21 +164,21 @@ public final class  CommerceService {
     }
 
 
-    public String getBusMap(final String tripCode,final String fromStationCode, final String toStationCode, final LocalDate journeyDate) throws IOException, InterruptedException {
+    public final String getBusMap(final String tripCode,final String fromStationCode, final String toStationCode, final LocalDate journeyDate) throws IOException, InterruptedException {
         String busMap = null;
-        String monnth = String.valueOf(journeyDate.getMonth().getValue());
-        if(monnth.length() == 1) {
-            monnth = "0"+monnth;
+        String value = String.valueOf(journeyDate.getMonth().getValue());
+        if(value.length() == 1) {
+            value = "0"+value;
         }
 
         String dayOfMonth = String.valueOf(journeyDate.getDayOfMonth());
         if(dayOfMonth.length() == 1) {
-            dayOfMonth = "0"+monnth;
+            dayOfMonth = "0"+value;
         }
 
         StringBuilder stationUrl =
-                new StringBuilder(this.url + "/"+this.token+"/commerce/busmap/"+tripCode+"/"+fromStationCode+"/"+toStationCode+"/"+journeyDate.getYear()+"-"+monnth+"-"+dayOfMonth);
-        System.out.println(stationUrl);
+                new StringBuilder(this.url + "/"+this.token+"/commerce/busmap/"+tripCode+"/"+fromStationCode+"/"+toStationCode+"/"+journeyDate.getYear()+"-"+value+"-"+dayOfMonth);
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(stationUrl.toString()))
                 .setHeader("Content-Type", "application/json")

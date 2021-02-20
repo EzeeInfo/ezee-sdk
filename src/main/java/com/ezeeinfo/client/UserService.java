@@ -32,12 +32,12 @@ public final class UserService {
         this.httpClient = httpClient;
 
     }
-    public String generateOtp(final String mobileNumber) throws IOException, InterruptedException {
-        String busMap = null;
+    public Boolean generateOtp(final String mobileNumber) throws IOException, InterruptedException {
+        boolean isGenerated = false;
 
         StringBuilder stationUrl =
                 new StringBuilder(this.url + "/auth/"+this.token+"/customer/" + mobileNumber + "/otp/generate");
-        System.out.println(stationUrl);
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(stationUrl.toString()))
                 .POST(HttpRequest.BodyPublishers.noBody())
@@ -45,23 +45,24 @@ public final class UserService {
                 .build();
 
         HttpResponse<String> response = this.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        //send request
+
+        // send request
         int responseCode = response.statusCode();
 
-        //if successful
+        // if successful
         if (responseCode == HttpURLConnection.HTTP_OK) {
-            busMap = response.body();
+            Map<String, Object> map = objectMapper.readValue(response.body(), Map.class);
+            isGenerated =  ((Integer) map.get("status") == 1) ;
         }
-        return busMap;
+        return isGenerated;
     }
 
     public Authorization verifyOtp(final Integer otp, final String mobileNumber) throws IOException, InterruptedException {
         Authorization authorization = null;
 
-
         StringBuilder stationUrl =
                 new StringBuilder(this.url + "/auth/"+this.token+"/customer/" + mobileNumber + "/validate/otp/"+otp);
-        System.out.println(stationUrl);
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(stationUrl.toString()))
                 .POST(HttpRequest.BodyPublishers.noBody())
@@ -84,7 +85,6 @@ public final class UserService {
                 while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
                     authorization = objectMapper
                             .readValue(jsonParser, Authorization.class);
-
                 }
             }
         }
@@ -99,20 +99,15 @@ public final class UserService {
         if (responseCode >= 400 && responseCode < 500) {
 
             BusManagerClientException.ModelState modelState = new BusManagerClientException.ModelState((List<String>) ((Map) errorResponse.get("ModelState")).get("filters"));
-            BusManagerClientException rentManagerClientException = new BusManagerClientException(errorResponse.get("Message").toString(),
+            throw new BusManagerClientException(errorResponse.get("Message").toString(),
                     modelState);
 
-            throw rentManagerClientException;
-
         } else {
-
-            BusManagerServerException rentManagerServerException = new BusManagerServerException((String) errorResponse.get("UserMessage"), (String) errorResponse.get("DeveloperMessage"),
+            throw new BusManagerServerException((String) errorResponse.get("UserMessage"), (String) errorResponse.get("DeveloperMessage"),
                     (Integer) errorResponse.get("ErrorCode"), (String) errorResponse.get("MoreInfoUri"),
                     (String) errorResponse.get("Exception"), (String) errorResponse.get("Details"),
                     (String) errorResponse.get("InnerException"),
                     (Map<String, Object>) errorResponse.get("AdditionalData"));
-
-            throw rentManagerServerException;
         }
     }
 }
