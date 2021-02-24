@@ -1,9 +1,7 @@
 package com.ezeeinfo.client;
 
 import com.ezeeinfo.exception.BusManagerClientException;
-import com.ezeeinfo.exception.BusManagerServerException;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ezeeinfo.exception.BusManagerException;
@@ -15,6 +13,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class BusManager {
@@ -36,8 +37,11 @@ public class BusManager {
         this.httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1)
                 .connectTimeout(Duration.ofSeconds(10)).build();
         this.token = getToken(namespaceCode);
-        this.commerceService = new CommerceService(url, token, objectMapper == null ? new ObjectMapper() : objectMapper,
-                httpClient);
+
+        Convertor convertor = new Convertor(this.objectMapper,this.httpClient);
+
+
+        this.commerceService = new CommerceService(url, token, convertor);
         this.userService = new UserService(url, token, objectMapper == null ? new ObjectMapper() : objectMapper,
                 httpClient);
     }
@@ -133,25 +137,106 @@ public class BusManager {
         }
     }
 
-    private void handleException(HttpResponse<String> response) throws JsonProcessingException, BusManagerClientException, BusManagerServerException {
+    static class Convertor {
 
-        Map<String, Object> errorResponse = objectMapper.readValue(response.body(), Map.class);
-        int responseCode = response.statusCode();
+        private final ObjectMapper objectMapper;
+        private final HttpClient httpClient;
 
-        if (responseCode >= 400 && responseCode < 500) {
+        private Convertor(final ObjectMapper objectMapper, final HttpClient httpClient) {
+            this.objectMapper = objectMapper;
+            this.httpClient = httpClient;
+        }
+
+        <T> List<T> getDataAsList(final HttpRequest request, Class<T> clazz) throws BusManagerException, IOException {
+            List<T> objects = new ArrayList<>();
+            try (JsonParser jsonParser = getJsonParser(request)) {
+                while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
+                    objects.add(objectMapper
+                            .readValue(jsonParser, clazz));
+                }
+            }
+            return objects;
+        }
+
+        <T> Map<String,List<T>> getDataAsMapOfLists(final HttpRequest request, Class<T> clazz) throws BusManagerException, IOException {
+            Map<String,List<T>> routesMap = new HashMap<>();
+            try (JsonParser jsonParser = getJsonParser(request)) {
+                Map<String, List<T>> rM = new HashMap<>();
+                while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
+                    Map<String, List<T>> route = objectMapper
+                            .readValue(jsonParser, Map.class);
+
+                    route.entrySet().forEach(entry -> {
+                        rM.put(entry.getKey(), entry.getValue());
+                    });
+                }
+                routesMap = rM;
+            }
+            return routesMap;
+        }
+
+        Map<String,Object> getDataAsMap(final HttpRequest request) throws BusManagerException, IOException {
+            Map<String,Object> routesMap = null ;
+            try (JsonParser jsonParser = getJsonParser(request)) {
+                while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
+                    routesMap = objectMapper
+                            .readValue(jsonParser, Map.class);
+                }
+            }
+            return routesMap;
+        }
+
+        private JsonParser getJsonParser(final HttpRequest request) throws BusManagerException {
+
+            String errorCode = null;
+            String errorDesc = null;
+            JsonParser jsonParser = null;
+            try {
+                HttpResponse<String> response = this.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                //send request
+                int responseCode = response.statusCode();
+
+                //if successful
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+
+                    jsonParser = objectMapper.getFactory()
+                            .createParser(response.body());
+
+                    //loop through the JsonTokens
+                    while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
+                        if ("errorCode".equals(jsonParser.getCurrentName())) {
+                            jsonParser.nextToken();
+                            errorCode = jsonParser.getValueAsString();
+                        } else if ("errorDesc".equals(jsonParser.getCurrentName())) {
+                            jsonParser.nextToken();
+                            errorDesc = jsonParser.getValueAsString();
+                            break;
+                        }
+                        if ("data".equals(jsonParser.getCurrentName())) {
+                            jsonParser.nextToken();
+                            break;
+                        }
+                    }
+
+                    if (errorDesc != null) {
+                        jsonParser.close();
+                        throw new BusManagerClientException(errorCode, errorDesc);
+                    }
+                    return jsonParser;
 
 
-        } else {
-
-            BusManagerServerException rentManagerServerException = new BusManagerServerException((String) errorResponse.get("UserMessage"), (String) errorResponse.get("DeveloperMessage"),
-                    (Integer) errorResponse.get("ErrorCode"), (String) errorResponse.get("MoreInfoUri"),
-                    (String) errorResponse.get("Exception"), (String) errorResponse.get("Details"),
-                    (String) errorResponse.get("InnerException"),
-                    (Map<String, Object>) errorResponse.get("AdditionalData"));
-
-            throw rentManagerServerException;
+                }
+            } catch (IOException | InterruptedException e) {
+                throw new BusManagerException("Unable to create Parser",e);
+            }
+            throw new BusManagerException("Unable to create Parser");
         }
     }
+
+
+
+
+
 
 
 }

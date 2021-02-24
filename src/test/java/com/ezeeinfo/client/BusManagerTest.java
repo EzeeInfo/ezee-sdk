@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 class BusManagerTest {
 
@@ -50,7 +51,7 @@ class BusManagerTest {
 
         System.out.println(trip.getTravelDate());
 
-        String busMap = commerceService.getBusMap(trip.getTripCode()
+        Map<String, Object> busMap = commerceService.getBusMap(trip.getTripCode()
                 ,trip.getFromStation().getCode()
                 ,trip.getToStation().getCode()
         ,LocalDate.now().plusDays(2L));
