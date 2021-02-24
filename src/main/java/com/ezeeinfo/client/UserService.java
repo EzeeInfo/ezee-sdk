@@ -1,10 +1,7 @@
 package com.ezeeinfo.client;
 
-import com.ezeeinfo.exception.BusManagerClientException;
-import com.ezeeinfo.exception.BusManagerServerException;
 import com.ezeeinfo.model.Authorization;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

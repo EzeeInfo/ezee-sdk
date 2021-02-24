@@ -31,7 +31,7 @@ class BusManagerTest {
 
 
     @Test
-    void testBooking() throws IOException, InterruptedException {
+    void testBooking() throws IOException, InterruptedException, BusManagerException {
 
 
 

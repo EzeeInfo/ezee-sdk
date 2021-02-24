@@ -2,7 +2,6 @@ package com.ezeeinfo.client;
 
 import com.ezeeinfo.exception.BusManagerClientException;
 import com.ezeeinfo.exception.BusManagerServerException;
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
@@ -66,7 +65,8 @@ public class BusManager {
 
         if (responseCode == HttpURLConnection.HTTP_OK) {
 
-            try (JsonParser jsonParser = new JsonFactory().createParser(response.body())) {
+            try (JsonParser jsonParser = objectMapper.getFactory()
+                    .createParser(response.body())) {
                 //loop through the JsonTokens
                 while(jsonParser.nextToken() != JsonToken.END_OBJECT){
                     if("errorCode".equals(jsonParser.getCurrentName())){
@@ -81,6 +81,7 @@ public class BusManager {
                     if("authToken".equals(jsonParser.getCurrentName())){
                         jsonParser.nextToken();
                         token = jsonParser.getValueAsString();
+                        break;
                     }
                 }
             }
@@ -88,7 +89,6 @@ public class BusManager {
             if(errorDesc != null) {
                 throw new BusManagerClientException(errorCode,errorDesc);
             }
-
 
         }
         return token;

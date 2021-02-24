@@ -1,5 +1,6 @@
 package com.ezeeinfo.client;
 
+import com.ezeeinfo.exception.BusManagerException;
 import com.ezeeinfo.model.Point;
 import com.ezeeinfo.model.Station;
 import com.ezeeinfo.model.Trip;
@@ -36,55 +37,93 @@ public final class CommerceService {
 
     }
 
-    public final List<Point> getPoints() throws IOException, InterruptedException {
+    public final List<Point> getPoints() throws IOException, InterruptedException, BusManagerException {
 
         final List<Station> stations = getStations();
-        final Map<String,List<String>> routesMap = getRoute();
+        final Map<String, List<String>> routesMap = getRoute();
 
         return stations.stream().map(fromStation -> {
             List<String> toStationCodes = routesMap.get(fromStation.getCode());
             List<Station> to = toStationCodes == null ? new ArrayList<>() :
                     toStationCodes.stream()
-                    .map( sCode-> stations.stream().filter(toStation->{
-                return toStation.getCode().equals(sCode);
-            }).findFirst().get()).collect(Collectors.toList());
-            return new Point(fromStation,to);
+                            .map(sCode -> stations.stream().filter(toStation -> {
+                                return toStation.getCode().equals(sCode);
+                            }).findFirst().get()).collect(Collectors.toList());
+            return new Point(fromStation, to);
         }).collect(Collectors.toList());
     }
 
-    public final List<Station> getStations() throws IOException, InterruptedException {
+    public final List<Station> getStations() throws BusManagerException, IOException {
         List<Station> stations = null;
-        StringBuilder stationUrl = new StringBuilder(this.url + "/"+this.token+"/commerce/station");
+        StringBuilder stationUrl = new StringBuilder(this.url + "/" + this.token + "/commerce/station");
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(stationUrl.toString()))
                 .setHeader("Content-Type", "application/json")
                 .build();
 
-        HttpResponse<String> response = this.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        //send request
-        int responseCode = response.statusCode();
 
-        //if successful
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            try (JsonParser jsonParser = objectMapper.getFactory()
-                    .createParser(response.body())) {
-                while (jsonParser.nextToken() != JsonToken.START_ARRAY) {
+            try (JsonParser jsonParser = getJsonParser(request)) {
 
-                }
                 stations = new ArrayList<>();
                 while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
                     stations.add(objectMapper
                             .readValue(jsonParser, Station.class));
                 }
             }
-        }
+
         return stations;
     }
 
-    public final Map<String,List<String>> getRoute() throws IOException, InterruptedException {
+    private JsonParser getJsonParser(final HttpRequest request) throws BusManagerException {
 
-        Map<String,List<String>> routesMap = null;
+        String errorCode = null;
+        String errorDesc = null;
+        JsonParser jsonParser = null;
+        try {
+            HttpResponse<String> response = this.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            //send request
+            int responseCode = response.statusCode();
+
+            //if successful
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+
+                jsonParser = objectMapper.getFactory()
+                        .createParser(response.body());
+
+                //loop through the JsonTokens
+                while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
+                    if ("errorCode".equals(jsonParser.getCurrentName())) {
+                        jsonParser.nextToken();
+                        errorCode = jsonParser.getValueAsString();
+                    } else if ("errorDesc".equals(jsonParser.getCurrentName())) {
+                        jsonParser.nextToken();
+                        errorDesc = jsonParser.getValueAsString();
+                        break;
+                    }
+                    if ("data".equals(jsonParser.getCurrentName())) {
+                        jsonParser.nextToken();
+                        break;
+                    }
+                }
+
+                if (errorDesc != null) {
+                    jsonParser.close();
+                    throw new BusManagerClientException(errorCode, errorDesc);
+                }
+                return jsonParser;
+
+
+            }
+        } catch (IOException | InterruptedException e) {
+            throw new BusManagerException("Unable to create Parser",e);
+        }
+        throw new BusManagerException("Unable to create Parser");
+    }
+
+    public final Map<String, List<String>> getRoute() throws IOException, InterruptedException {
+
+        Map<String, List<String>> routesMap = null;
 
         StringBuilder routeUrl = new StringBuilder(this.url + "/" + this.token + "/commerce/route");
 
@@ -105,13 +144,13 @@ public final class CommerceService {
                 while (jsonParser.nextToken() != JsonToken.START_OBJECT) {
 
                 }
-                Map<String,List<String>> rM = new HashMap<>();
+                Map<String, List<String>> rM = new HashMap<>();
                 while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
-                    Map<String,List<String>> route = objectMapper
+                    Map<String, List<String>> route = objectMapper
                             .readValue(jsonParser, Map.class);
 
-                    route.entrySet().forEach(entry-> {
-                        rM.put(entry.getKey(),entry.getValue());
+                    route.entrySet().forEach(entry -> {
+                        rM.put(entry.getKey(), entry.getValue());
                     });
 
                 }
@@ -125,17 +164,17 @@ public final class CommerceService {
     public final List<Trip> getTrips(final String fromStationCode, final String toStationCode, final LocalDate journeyDate) throws IOException, InterruptedException {
         List<Trip> trips = null;
         String monnth = String.valueOf(journeyDate.getMonth().getValue());
-        if(monnth.length() == 1) {
-            monnth = "0"+monnth;
+        if (monnth.length() == 1) {
+            monnth = "0" + monnth;
         }
 
         String dayOfMonth = String.valueOf(journeyDate.getDayOfMonth());
-        if(dayOfMonth.length() == 1) {
-            dayOfMonth = "0"+monnth;
+        if (dayOfMonth.length() == 1) {
+            dayOfMonth = "0" + monnth;
         }
 
         StringBuilder stationUrl =
-                new StringBuilder(this.url + "/"+this.token+"/commerce/search/"+fromStationCode+"/"+toStationCode+"/"+journeyDate.getYear()+"-"+monnth+"-"+dayOfMonth);
+                new StringBuilder(this.url + "/" + this.token + "/commerce/search/" + fromStationCode + "/" + toStationCode + "/" + journeyDate.getYear() + "-" + monnth + "-" + dayOfMonth);
         System.out.println(stationUrl);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(stationUrl.toString()))
@@ -164,20 +203,20 @@ public final class CommerceService {
     }
 
 
-    public final String getBusMap(final String tripCode,final String fromStationCode, final String toStationCode, final LocalDate journeyDate) throws IOException, InterruptedException {
+    public final String getBusMap(final String tripCode, final String fromStationCode, final String toStationCode, final LocalDate journeyDate) throws IOException, InterruptedException {
         String busMap = null;
         String value = String.valueOf(journeyDate.getMonth().getValue());
-        if(value.length() == 1) {
-            value = "0"+value;
+        if (value.length() == 1) {
+            value = "0" + value;
         }
 
         String dayOfMonth = String.valueOf(journeyDate.getDayOfMonth());
-        if(dayOfMonth.length() == 1) {
-            dayOfMonth = "0"+value;
+        if (dayOfMonth.length() == 1) {
+            dayOfMonth = "0" + value;
         }
 
         StringBuilder stationUrl =
-                new StringBuilder(this.url + "/"+this.token+"/commerce/busmap/"+tripCode+"/"+fromStationCode+"/"+toStationCode+"/"+journeyDate.getYear()+"-"+value+"-"+dayOfMonth);
+                new StringBuilder(this.url + "/" + this.token + "/commerce/busmap/" + tripCode + "/" + fromStationCode + "/" + toStationCode + "/" + journeyDate.getYear() + "-" + value + "-" + dayOfMonth);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(stationUrl.toString()))
@@ -194,8 +233,6 @@ public final class CommerceService {
         }
         return busMap;
     }
-
-
 
 
 }
