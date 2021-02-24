@@ -11,16 +11,29 @@ import java.util.List;
 
 class BusManagerTest {
 
-    @Test
-    void testCreation() throws BusManagerException, IOException, InterruptedException {
+    private final UserService userService;
+    private final CommerceService commerceService;
 
+    BusManagerTest() throws BusManagerException {
         BusManager busManager = BusManager.newBusManagerBuilder()
-                    .url("http://app.ezeebits.com/busservices")
-                    .namespaceCode("demobo")
-                            .build();
+                .url("http://app.ezeebits.com/busservices")
+                .namespaceCode("demobo")
+                .build();
 
-        UserService userService = busManager.userService();
-        CommerceService commerceService = busManager.commerceService();
+        userService = busManager.userService();
+        commerceService = busManager.commerceService();
+    }
+
+    @Test
+    void testCreation() {
+        System.out.println("DDDDD");
+    }
+
+
+    @Test
+    void testBooking() throws IOException, InterruptedException {
+
+
 
         List<Station> stations = commerceService.getStations();
 
@@ -43,13 +56,7 @@ class BusManagerTest {
         ,LocalDate.now().plusDays(2L));
 
         System.out.println(busMap);
-        //System.out.println(commerceService.getRoute());
 
-//        LocalDate jouneyDate = LocalDate.now().plusDays(2);
-//
-//        List<Trip> trips = commerceService.getTrips("STG8UJZ140","STF3OEX206", jouneyDate);
-//
-//        System.out.println(commerceService.getBusMap(trips.get(0).getTripCode(),"STG8UJZ140","STF3OEX206", jouneyDate));
     }
 
 

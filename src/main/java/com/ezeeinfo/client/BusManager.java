@@ -1,5 +1,11 @@
 package com.ezeeinfo.client;
 
+import com.ezeeinfo.exception.BusManagerClientException;
+import com.ezeeinfo.exception.BusManagerServerException;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ezeeinfo.exception.BusManagerException;
 
@@ -22,7 +28,7 @@ public class BusManager {
     private final UserService userService;
 
     private BusManager(String url, String namespaceCode, ObjectMapper objectMapper)
-            throws IOException, InterruptedException {
+            throws IOException, InterruptedException, BusManagerClientException {
         assert url != null : "URL Required";
         assert namespaceCode != null : "Namespace Code Required";
         this.objectMapper = objectMapper == null ? new ObjectMapper() : objectMapper;
@@ -41,29 +47,49 @@ public class BusManager {
         return new BusManagerBuilder();
     }
 
-    private String getToken(String namespaceCode) throws IOException, InterruptedException {
+    private String getToken(String namespaceCode) throws IOException, InterruptedException, BusManagerClientException {
+
+        String errorCode = null;
+        String errorDesc = null;
+
+
         String token = null;
-
-        // Connection created
-
         final StringBuilder authUrl = new StringBuilder(this.url + "/auth/getGuestAuthToken?namespaceCode="
                 + namespaceCode + "&devicemedium=WEB&authenticationTypeCode=BITSUP");
 
-        // set header
         HttpRequest request = HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofString(""))
                 .uri(URI.create(authUrl.toString())).setHeader("Content-Type", "application/json").build();
 
         HttpResponse<String> response = this.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        // send request
         int responseCode = response.statusCode();
 
-        // if successful
         if (responseCode == HttpURLConnection.HTTP_OK) {
-            Map<String, Object> map = objectMapper.readValue(response.body(), Map.class);
-            if ((Integer) map.get("status") == 1) {
-                token = (String) ((Map<String, Object>) map.get("data")).get("authToken");
+
+            try (JsonParser jsonParser = new JsonFactory().createParser(response.body())) {
+                //loop through the JsonTokens
+                while(jsonParser.nextToken() != JsonToken.END_OBJECT){
+                    if("errorCode".equals(jsonParser.getCurrentName())){
+                        jsonParser.nextToken();
+                        errorCode = jsonParser.getValueAsString();
+                    }
+                    else if("errorDesc".equals(jsonParser.getCurrentName())){
+                        jsonParser.nextToken();
+                        errorDesc = jsonParser.getValueAsString();
+                        break;
+                    }
+                    if("authToken".equals(jsonParser.getCurrentName())){
+                        jsonParser.nextToken();
+                        token = jsonParser.getValueAsString();
+                    }
+                }
             }
+
+            if(errorDesc != null) {
+                throw new BusManagerClientException(errorCode,errorDesc);
+            }
+
+
         }
         return token;
 
@@ -106,4 +132,26 @@ public class BusManager {
             }
         }
     }
+
+    private void handleException(HttpResponse<String> response) throws JsonProcessingException, BusManagerClientException, BusManagerServerException {
+
+        Map<String, Object> errorResponse = objectMapper.readValue(response.body(), Map.class);
+        int responseCode = response.statusCode();
+
+        if (responseCode >= 400 && responseCode < 500) {
+
+
+        } else {
+
+            BusManagerServerException rentManagerServerException = new BusManagerServerException((String) errorResponse.get("UserMessage"), (String) errorResponse.get("DeveloperMessage"),
+                    (Integer) errorResponse.get("ErrorCode"), (String) errorResponse.get("MoreInfoUri"),
+                    (String) errorResponse.get("Exception"), (String) errorResponse.get("Details"),
+                    (String) errorResponse.get("InnerException"),
+                    (Map<String, Object>) errorResponse.get("AdditionalData"));
+
+            throw rentManagerServerException;
+        }
+    }
+
+
 }

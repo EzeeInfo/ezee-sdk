@@ -195,30 +195,7 @@ public final class CommerceService {
         return busMap;
     }
 
-    private void handleException(HttpResponse<String> response) throws JsonProcessingException, BusManagerClientException, BusManagerServerException {
 
-        Map<String, Object> errorResponse = objectMapper.readValue(response.body(), Map.class);
-        int responseCode = response.statusCode();
-
-        if (responseCode >= 400 && responseCode < 500) {
-
-            BusManagerClientException.ModelState modelState = new BusManagerClientException.ModelState((List<String>) ((Map) errorResponse.get("ModelState")).get("filters"));
-            BusManagerClientException rentManagerClientException = new BusManagerClientException(errorResponse.get("Message").toString(),
-                    modelState);
-
-            throw rentManagerClientException;
-
-        } else {
-
-            BusManagerServerException rentManagerServerException = new BusManagerServerException((String) errorResponse.get("UserMessage"), (String) errorResponse.get("DeveloperMessage"),
-                    (Integer) errorResponse.get("ErrorCode"), (String) errorResponse.get("MoreInfoUri"),
-                    (String) errorResponse.get("Exception"), (String) errorResponse.get("Details"),
-                    (String) errorResponse.get("InnerException"),
-                    (Map<String, Object>) errorResponse.get("AdditionalData"));
-
-            throw rentManagerServerException;
-        }
-    }
 
 
 }

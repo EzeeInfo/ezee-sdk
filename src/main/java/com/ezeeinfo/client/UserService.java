@@ -30,8 +30,8 @@ public final class UserService {
         this.url = url;
         this.token = token;
         this.httpClient = httpClient;
-
     }
+
     public Boolean generateOtp(final String mobileNumber) throws IOException, InterruptedException {
         boolean isGenerated = false;
 
@@ -51,6 +51,10 @@ public final class UserService {
 
         // if successful
         if (responseCode == HttpURLConnection.HTTP_OK) {
+
+            // DOM = Document Object Model
+            // Stax = Streams =>   Parsing
+
             Map<String, Object> map = objectMapper.readValue(response.body(), Map.class);
             isGenerated =  ((Integer) map.get("status") == 1) ;
         }
@@ -91,23 +95,6 @@ public final class UserService {
         return authorization;
     }
 
-    private void handleException(HttpResponse<String> response) throws JsonProcessingException, BusManagerClientException, BusManagerServerException {
 
-        Map<String, Object> errorResponse = objectMapper.readValue(response.body(), Map.class);
-        int responseCode = response.statusCode();
 
-        if (responseCode >= 400 && responseCode < 500) {
-
-            BusManagerClientException.ModelState modelState = new BusManagerClientException.ModelState((List<String>) ((Map) errorResponse.get("ModelState")).get("filters"));
-            throw new BusManagerClientException(errorResponse.get("Message").toString(),
-                    modelState);
-
-        } else {
-            throw new BusManagerServerException((String) errorResponse.get("UserMessage"), (String) errorResponse.get("DeveloperMessage"),
-                    (Integer) errorResponse.get("ErrorCode"), (String) errorResponse.get("MoreInfoUri"),
-                    (String) errorResponse.get("Exception"), (String) errorResponse.get("Details"),
-                    (String) errorResponse.get("InnerException"),
-                    (Map<String, Object>) errorResponse.get("AdditionalData"));
-        }
-    }
 }

@@ -4,22 +4,14 @@ import java.util.List;
 
 public class BusManagerClientException extends BusManagerException {
 
-    private final ModelState modelState;
+    private final String code;
 
-    public BusManagerClientException(final String message, final ModelState modelState) {
-        super(message, null);
-        this.modelState = modelState;
+    public BusManagerClientException(final String code, final String message) {
+        super(message);
+        this.code = code;
     }
 
-    public static class ModelState {
-        private final List<String> filters;
-
-        public ModelState(final List<String> filters) {
-            this.filters = filters;
-        }
-
-        public List<String> getFilters() {
-            return filters;
-        }
+    public String getCode() {
+        return code;
     }
 }
