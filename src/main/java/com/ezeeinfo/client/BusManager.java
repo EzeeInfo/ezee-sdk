@@ -30,7 +30,7 @@ public class BusManager {
     private final UserService userService;
 
     private BusManager(String url, String namespaceCode, ObjectMapper objectMapper)
-            throws IOException, InterruptedException, BusManagerClientException {
+            throws IOException, InterruptedException, BusManagerException {
         assert url != null : "URL Required";
         assert namespaceCode != null : "Namespace Code Required";
         this.objectMapper = objectMapper == null ? new ObjectMapper() : objectMapper;
@@ -40,11 +40,11 @@ public class BusManager {
         this.url = url;
         this.httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1)
                 .connectTimeout(Duration.ofSeconds(10)).build();
-        String token = getToken(namespaceCode);
+
 
         Convertor convertor = new Convertor(this.objectMapper,this.httpClient);
 
-
+        String token = getToken(namespaceCode,convertor);
         this.commerceService = new CommerceService(url, token, convertor);
         this.userService = new UserService(url, token, objectMapper == null ? new ObjectMapper() : objectMapper,
                 httpClient);
@@ -54,7 +54,7 @@ public class BusManager {
         return new BusManagerBuilder();
     }
 
-    private String getToken(String namespaceCode) throws IOException, InterruptedException, BusManagerClientException {
+    private String getToken(String namespaceCode,Convertor convertor) throws IOException, InterruptedException, BusManagerException {
 
         String errorCode = null;
         String errorDesc = null;
@@ -67,39 +67,7 @@ public class BusManager {
         HttpRequest request = HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofString(""))
                 .uri(URI.create(authUrl.toString())).setHeader("Content-Type", "application/json").build();
 
-        HttpResponse<String> response = this.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-        int responseCode = response.statusCode();
-
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-
-            try (JsonParser jsonParser = objectMapper.getFactory()
-                    .createParser(response.body())) {
-                //loop through the JsonTokens
-                while(jsonParser.nextToken() != JsonToken.END_OBJECT){
-                    if("errorCode".equals(jsonParser.getCurrentName())){
-                        jsonParser.nextToken();
-                        errorCode = jsonParser.getValueAsString();
-                    }
-                    else if("errorDesc".equals(jsonParser.getCurrentName())){
-                        jsonParser.nextToken();
-                        errorDesc = jsonParser.getValueAsString();
-                        break;
-                    }
-                    if("authToken".equals(jsonParser.getCurrentName())){
-                        jsonParser.nextToken();
-                        token = jsonParser.getValueAsString();
-                        break;
-                    }
-                }
-            }
-
-            if(errorDesc != null) {
-                throw new BusManagerClientException(errorCode,errorDesc);
-            }
-
-        }
-        return token;
+        return convertor.getValueAsString(request,"authToken");
 
     }
 
@@ -149,6 +117,20 @@ public class BusManager {
         private Convertor(final ObjectMapper objectMapper, final HttpClient httpClient) {
             this.objectMapper = objectMapper;
             this.httpClient = httpClient;
+        }
+
+        String getValueAsString(final HttpRequest request,final String propertyName) throws BusManagerException, IOException {
+            String value = null;
+            try (JsonParser jsonParser = getJsonParser(request)) {
+                while (jsonParser.nextToken() != null ) {
+                    if(propertyName.equals(jsonParser.getCurrentName())){
+                        jsonParser.nextToken();
+                        value = jsonParser.getValueAsString();
+                        break;
+                    }
+                }
+            }
+            return value;
         }
 
         <T> List<T> getDataAsList(final HttpRequest request, Class<T> clazz) throws BusManagerException, IOException {
