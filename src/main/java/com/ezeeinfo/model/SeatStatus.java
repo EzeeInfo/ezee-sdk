@@ -17,17 +17,17 @@ public class SeatStatus {
         return this.name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public String toString() {
         return "{" +
-            " code='" + getCode() + "'" +
-            ", name='" + getName() + "'" +
-            ", activeFlag='" + getActiveFlag() + "'" +
-            "}";
-    }
-
-    public void setName(String name) {
-        this.name = name;
+                " code='" + getCode() + "'" +
+                ", name='" + getName() + "'" +
+                ", activeFlag='" + getActiveFlag() + "'" +
+                "}";
     }
 
     public Integer getActiveFlag() {

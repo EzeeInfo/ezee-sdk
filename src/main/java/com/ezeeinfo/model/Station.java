@@ -15,19 +15,18 @@ public class Station {
         this.code = code;
         this.name = name;
 
-        char[] shortChars = name.toCharArray(); ;
+        char[] shortChars = name.toCharArray();
 
         StringBuilder stringBuilder = new StringBuilder();
 
         int length = shortChars.length;
 
         //loop execute till the length of the string
-        for (int i=0; i < length; i++)
-        {
+        for (int i = 0; i < length; i++) {
             int charType = Character.getType(shortChars[i]);
             if (charType == Character.LOWERCASE_LETTER) {
                 stringBuilder.append(shortChars[i]);
-            }else if(charType == Character.UPPERCASE_LETTER){
+            } else if (charType == Character.UPPERCASE_LETTER) {
                 stringBuilder.append(Character.toLowerCase(shortChars[i]));
             }
         }

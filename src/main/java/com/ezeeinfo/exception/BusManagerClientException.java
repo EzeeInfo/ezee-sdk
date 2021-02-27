@@ -1,7 +1,5 @@
 package com.ezeeinfo.exception;
 
-import java.util.List;
-
 public class BusManagerClientException extends BusManagerException {
 
     private final String code;

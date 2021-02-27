@@ -33,7 +33,7 @@ public final class UserService {
         boolean isGenerated = false;
 
         StringBuilder stationUrl =
-                new StringBuilder(this.url + "/auth/"+this.token+"/customer/" + mobileNumber + "/otp/generate");
+                new StringBuilder(this.url + "/auth/" + this.token + "/customer/" + mobileNumber + "/otp/generate");
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(stationUrl.toString()))
@@ -53,7 +53,7 @@ public final class UserService {
             // Stax = Streams =>   Parsing
 
             Map<String, Object> map = objectMapper.readValue(response.body(), Map.class);
-            isGenerated =  ((Integer) map.get("status") == 1) ;
+            isGenerated = ((Integer) map.get("status") == 1);
         }
         return isGenerated;
     }
@@ -62,7 +62,7 @@ public final class UserService {
         Authorization authorization = null;
 
         StringBuilder stationUrl =
-                new StringBuilder(this.url + "/auth/"+this.token+"/customer/" + mobileNumber + "/validate/otp/"+otp);
+                new StringBuilder(this.url + "/auth/" + this.token + "/customer/" + mobileNumber + "/validate/otp/" + otp);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(stationUrl.toString()))
@@ -82,7 +82,7 @@ public final class UserService {
                 while (jsonParser.nextToken() != JsonToken.START_OBJECT) {
 
                 }
-                Map<String,List<String>> rM = new HashMap<>();
+                Map<String, List<String>> rM = new HashMap<>();
                 while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
                     authorization = objectMapper
                             .readValue(jsonParser, Authorization.class);
@@ -91,7 +91,6 @@ public final class UserService {
         }
         return authorization;
     }
-
 
 
 }

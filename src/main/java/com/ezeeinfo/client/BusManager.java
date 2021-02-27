@@ -1,11 +1,11 @@
 package com.ezeeinfo.client;
 
 import com.ezeeinfo.exception.BusManagerClientException;
+import com.ezeeinfo.exception.BusManagerException;
 import com.ezeeinfo.exception.BusManagerServerException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ezeeinfo.exception.BusManagerException;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
@@ -42,9 +42,9 @@ public class BusManager {
                 .connectTimeout(Duration.ofSeconds(10)).build();
 
 
-        Convertor convertor = new Convertor(this.objectMapper,this.httpClient);
+        Convertor convertor = new Convertor(this.objectMapper, this.httpClient);
 
-        String token = getToken(namespaceCode,convertor);
+        String token = getToken(namespaceCode, convertor);
         this.commerceService = new CommerceService(url, token, convertor);
         this.userService = new UserService(url, token, objectMapper == null ? new ObjectMapper() : objectMapper,
                 httpClient);
@@ -54,7 +54,7 @@ public class BusManager {
         return new BusManagerBuilder();
     }
 
-    private String getToken(String namespaceCode,Convertor convertor) throws IOException, InterruptedException, BusManagerException {
+    private String getToken(String namespaceCode, Convertor convertor) throws IOException, InterruptedException, BusManagerException {
 
         String errorCode = null;
         String errorDesc = null;
@@ -67,7 +67,7 @@ public class BusManager {
         HttpRequest request = HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofString(""))
                 .uri(URI.create(authUrl.toString())).setHeader("Content-Type", "application/json").build();
 
-        return convertor.getValueAsString(request,"authToken");
+        return convertor.getValueAsString(request, "authToken");
 
     }
 
@@ -119,11 +119,11 @@ public class BusManager {
             this.httpClient = httpClient;
         }
 
-        String getValueAsString(final HttpRequest request,final String propertyName) throws BusManagerException, IOException {
+        String getValueAsString(final HttpRequest request, final String propertyName) throws BusManagerException, IOException {
             String value = null;
             try (JsonParser jsonParser = getJsonParser(request)) {
-                while (jsonParser.nextToken() != null ) {
-                    if(propertyName.equals(jsonParser.getCurrentName())){
+                while (jsonParser.nextToken() != null) {
+                    if (propertyName.equals(jsonParser.getCurrentName())) {
                         jsonParser.nextToken();
                         value = jsonParser.getValueAsString();
                         break;
@@ -144,8 +144,8 @@ public class BusManager {
             return objects;
         }
 
-        <T> Map<String,List<T>> getDataAsMapOfLists(final HttpRequest request, Class<T> clazz) throws BusManagerException, IOException {
-            Map<String,List<T>> routesMap = new HashMap<>();
+        <T> Map<String, List<T>> getDataAsMapOfLists(final HttpRequest request, Class<T> clazz) throws BusManagerException, IOException {
+            Map<String, List<T>> routesMap = new HashMap<>();
             try (JsonParser jsonParser = getJsonParser(request)) {
                 Map<String, List<T>> rM = new HashMap<>();
                 while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
@@ -161,8 +161,8 @@ public class BusManager {
             return routesMap;
         }
 
-        Map<String,Object> getDataAsMap(final HttpRequest request) throws BusManagerException, IOException {
-            Map<String,Object> routesMap = null ;
+        Map<String, Object> getDataAsMap(final HttpRequest request) throws BusManagerException, IOException {
+            Map<String, Object> routesMap = null;
             try (JsonParser jsonParser = getJsonParser(request)) {
                 while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
                     routesMap = objectMapper
@@ -211,19 +211,14 @@ public class BusManager {
                     return jsonParser;
 
 
-                }else {
+                } else {
                     throw new BusManagerServerException("System Failure", responseCode);
                 }
             } catch (IOException | InterruptedException e) {
-                throw new BusManagerException("Unable to create Parser",e);
+                throw new BusManagerException("Unable to create Parser", e);
             }
         }
     }
-
-
-
-
-
 
 
 }

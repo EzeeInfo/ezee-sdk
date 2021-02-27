@@ -9,4 +9,8 @@ public final class BusManagerServerException extends BusManagerException {
         super(message);
         this.statusCode = statusCode;
     }
+
+    public int getStatusCode() {
+        return statusCode;
+    }
 }

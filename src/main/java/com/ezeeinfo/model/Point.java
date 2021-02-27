@@ -8,7 +8,7 @@ public class Point {
 
     private final List<Station> to;
 
-    public Point(final Station station,final List<Station> to) {
+    public Point(final Station station, final List<Station> to) {
         this.station = station;
         this.to = to;
     }

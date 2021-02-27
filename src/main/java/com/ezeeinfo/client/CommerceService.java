@@ -56,7 +56,7 @@ public final class CommerceService {
                 .setHeader("Content-Type", "application/json")
                 .build();
 
-        return convertor.getDataAsList(request,Station.class);
+        return convertor.getDataAsList(request, Station.class);
 
     }
 
@@ -74,7 +74,7 @@ public final class CommerceService {
                 .setHeader("Content-Type", "application/json")
                 .build();
 
-        return convertor.getDataAsMapOfLists(request,String.class);
+        return convertor.getDataAsMapOfLists(request, String.class);
     }
 
     public final List<Trip> getTrips(final String fromStationCode, final String toStationCode, final LocalDate journeyDate) throws IOException, InterruptedException, BusManagerException {
@@ -97,11 +97,11 @@ public final class CommerceService {
                 .setHeader("Content-Type", "application/json")
                 .build();
 
-        return convertor.getDataAsList(request,Trip.class);
+        return convertor.getDataAsList(request, Trip.class);
     }
 
 
-    public final Map<String,Object> getBusMap(final String tripCode, final String fromStationCode, final String toStationCode, final LocalDate journeyDate) throws IOException, InterruptedException, BusManagerException {
+    public final Map<String, Object> getBusMap(final String tripCode, final String fromStationCode, final String toStationCode, final LocalDate journeyDate) throws IOException, InterruptedException, BusManagerException {
         String busMap = null;
         String value = String.valueOf(journeyDate.getMonth().getValue());
         if (value.length() == 1) {

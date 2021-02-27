@@ -1,14 +1,13 @@
 package com.ezeeinfo.client;
 
+import com.ezeeinfo.exception.BusManagerException;
 import com.ezeeinfo.model.Station;
 import com.ezeeinfo.model.Trip;
-import com.ezeeinfo.exception.BusManagerException;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 class BusManagerTest {
 
@@ -35,7 +34,6 @@ class BusManagerTest {
     void testBooking() throws IOException, InterruptedException, BusManagerException {
 
 
-
         List<Station> stations = commerceService.getStations();
 
         Station chennaiStation = stations.stream()
@@ -45,7 +43,7 @@ class BusManagerTest {
                 .filter(station -> station.getName().equals("Bangalore")).findFirst().get();
 
         List<Trip> trips = commerceService.getTrips(chennaiStation.getCode()
-        , bangaloreStation.getCode(), LocalDate.now().plusDays(1L));
+                , bangaloreStation.getCode(), LocalDate.now().plusDays(1L));
 
         Trip trip = trips.get(0);
 

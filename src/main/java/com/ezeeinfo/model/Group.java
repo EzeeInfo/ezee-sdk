@@ -48,10 +48,10 @@ public class Group {
     @Override
     public String toString() {
         return "{" +
-            " activeFlag='" + getActiveFlag() + "'" +
-            ", userCount='" + getUserCount() + "'" +
-            ", level='" + getLevel() + "'" +
-            "}";
+                " activeFlag='" + getActiveFlag() + "'" +
+                ", userCount='" + getUserCount() + "'" +
+                ", level='" + getLevel() + "'" +
+                "}";
     }
 
 }

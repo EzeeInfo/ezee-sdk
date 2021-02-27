@@ -1,10 +1,10 @@
 package com.ezeeinfo.model;
 
 public class BusSeatType {
- 
-   private String code;
-   private String name;
-   private Integer activeFlag;
+
+    private String code;
+    private String name;
+    private Integer activeFlag;
 
 
     public String getCode() {
@@ -49,10 +49,10 @@ public class BusSeatType {
     @Override
     public String toString() {
         return "{" +
-            " code='" + getCode() + "'" +
-            ", name='" + getName() + "'" +
-            ", activeFlag='" + getActiveFlag() + "'" +
-            "}";
+                " code='" + getCode() + "'" +
+                ", name='" + getName() + "'" +
+                ", activeFlag='" + getActiveFlag() + "'" +
+                "}";
     }
 
 }
