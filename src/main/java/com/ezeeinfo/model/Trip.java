@@ -1,10 +1,8 @@
 package com.ezeeinfo.model;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -12,7 +10,6 @@ public class Trip {
 
     private String tripCode;
     @JsonProperty("travelDate")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate travelDate;
     private String tripStageCode;
     private Integer bookedSeatCount;

@@ -1,11 +1,12 @@
 package com.ezeeinfo.client;
 
 import com.ezeeinfo.exception.BusManagerClientException;
+import com.ezeeinfo.exception.BusManagerServerException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ezeeinfo.exception.BusManagerException;
-import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
+import com.fasterxml.jackson.databind.util.StdDateFormat;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.io.IOException;
@@ -35,6 +36,7 @@ public class BusManager {
         assert namespaceCode != null : "Namespace Code Required";
         this.objectMapper = objectMapper == null ? new ObjectMapper() : objectMapper;
         this.objectMapper.registerModule(new JavaTimeModule());
+        this.objectMapper.setDateFormat(new StdDateFormat().withColonInTimeZone(false));
 
         this.url = url;
         this.httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1)
@@ -228,11 +230,12 @@ public class BusManager {
                     return jsonParser;
 
 
+                }else {
+                    throw new BusManagerServerException("System Failure", responseCode);
                 }
             } catch (IOException | InterruptedException e) {
                 throw new BusManagerException("Unable to create Parser",e);
             }
-            throw new BusManagerException("Unable to create Parser");
         }
     }
 
