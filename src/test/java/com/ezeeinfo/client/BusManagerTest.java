@@ -49,14 +49,14 @@ class BusManagerTest {
 
         Trip trip = trips.get(0);
 
-        System.out.println(trip.getTravelDate());
+        System.out.println(trip.getTripStatus());
 
-        Map<String, Object> busMap = commerceService.getBusMap(trip.getTripCode()
-                ,trip.getFromStation().getCode()
-                ,trip.getToStation().getCode()
-        ,LocalDate.now().plusDays(2L));
-
-        System.out.println(busMap);
+//        Map<String, Object> busMap = commerceService.getBusMap(trip.getTripCode()
+//                ,trip.getFromStation().getCode()
+//                ,trip.getToStation().getCode()
+//        ,LocalDate.now().plusDays(2L));
+//
+//        System.out.println(busMap);
 
     }
 

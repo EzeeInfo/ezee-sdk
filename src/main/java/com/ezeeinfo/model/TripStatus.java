@@ -1,32 +1,27 @@
 package com.ezeeinfo.model;
 
-public class TripStatus {
+import com.ezeeinfo.client.deserializer.TripStatusDeserialzer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-    private String code;
-    private String name;
-    private Integer activeFlag;
+
+@JsonDeserialize(using = TripStatusDeserialzer.class)
+public enum TripStatus {
+
+    TPO("TPO", "Trip Open");
+
+    private final String code;
+    private final String name;
+
+    TripStatus(final String code, final String name) {
+        this.code = code;
+        this.name = name;
+    }
 
     public String getCode() {
         return code;
     }
 
-    public void setCode(String code) {
-        this.code = code;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Integer getActiveFlag() {
-        return activeFlag;
-    }
-
-    public void setActiveFlag(Integer activeFlag) {
-        this.activeFlag = activeFlag;
     }
 }
