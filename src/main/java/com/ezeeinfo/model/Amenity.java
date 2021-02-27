@@ -1,32 +1,33 @@
 package com.ezeeinfo.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Amenity {
 
-    private String code;
-    private String name;
-    private Integer activeFlag;
+    private final String code;
+    private final String name;
+    private final Integer activeFlag;
+
+    @JsonCreator
+    public Amenity(@JsonProperty("code") String code,@JsonProperty("name") String name,@JsonProperty("activeFlag") Integer activeFlag) {
+        this.code = code;
+        this.name = name;
+        this.activeFlag = activeFlag;
+    }
 
     public String getCode() {
         return code;
     }
 
-    public void setCode(String code) {
-        this.code = code;
-    }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public Integer getActiveFlag() {
         return activeFlag;
     }
 
-    public void setActiveFlag(Integer activeFlag) {
-        this.activeFlag = activeFlag;
-    }
 }
