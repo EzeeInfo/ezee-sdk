@@ -5,6 +5,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ezeeinfo.exception.BusManagerException;
+import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -32,6 +34,7 @@ public class BusManager {
         assert url != null : "URL Required";
         assert namespaceCode != null : "Namespace Code Required";
         this.objectMapper = objectMapper == null ? new ObjectMapper() : objectMapper;
+        this.objectMapper.registerModule(new JavaTimeModule());
 
         this.url = url;
         this.httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1)
