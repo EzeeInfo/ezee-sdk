@@ -24,7 +24,6 @@ import java.util.Map;
 public class BusManager {
 
     private final String url;
-    private final String token;
     private final ObjectMapper objectMapper;
     private final HttpClient httpClient;
     private final CommerceService commerceService;
@@ -41,7 +40,7 @@ public class BusManager {
         this.url = url;
         this.httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1)
                 .connectTimeout(Duration.ofSeconds(10)).build();
-        this.token = getToken(namespaceCode);
+        String token = getToken(namespaceCode);
 
         Convertor convertor = new Convertor(this.objectMapper,this.httpClient);
 

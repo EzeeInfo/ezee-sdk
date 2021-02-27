@@ -7,7 +7,6 @@ public class Authorization {
 
     private final String authToken;
 
-
     private final String sessionToken;
 
     @JsonCreator
