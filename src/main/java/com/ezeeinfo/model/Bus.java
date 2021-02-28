@@ -1,42 +1,38 @@
 package com.ezeeinfo.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Bus {
 
-    private String categoryCode;
-    private String busType;
-    private String name;
-    private Integer totalSeatCount;
+    private final String categoryCode;
+    private final String busType;
+    private final String name;
+    private final Integer totalSeatCount;
+    @JsonCreator
+    public Bus(@JsonProperty("categoryCode") String categoryCode, @JsonProperty("busType") String busType,@JsonProperty("totalSeatCount") String name, Integer totalSeatCount) {
+        this.categoryCode = categoryCode;
+        this.busType = busType;
+        this.name = name;
+        this.totalSeatCount = totalSeatCount;
+    }
 
     public String getCategoryCode() {
         return categoryCode;
-    }
-
-    public void setCategoryCode(String categoryCode) {
-        this.categoryCode = categoryCode;
     }
 
     public String getBusType() {
         return busType;
     }
 
-    public void setBusType(String busType) {
-        this.busType = busType;
-    }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public Integer getTotalSeatCount() {
         return totalSeatCount;
-    }
-
-    public void setTotalSeatCount(Integer totalSeatCount) {
-        this.totalSeatCount = totalSeatCount;
     }
 
 }

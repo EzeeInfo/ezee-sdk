@@ -2,31 +2,25 @@ package com.ezeeinfo.model;
 
 public class TicketTransferTerms {
 
-    private Integer chargeAmount;
-    private String chargeType;
-    private Integer transferable;
+    private final Integer chargeAmount;
+    private final String chargeType;
+    private final Integer transferable;
+
+    public TicketTransferTerms(Integer chargeAmount, String chargeType, Integer transferable) {
+        this.chargeAmount = chargeAmount;
+        this.chargeType = chargeType;
+        this.transferable = transferable;
+    }
 
     public Integer getChargeAmount() {
         return chargeAmount;
-    }
-
-    public void setChargeAmount(Integer chargeAmount) {
-        this.chargeAmount = chargeAmount;
     }
 
     public String getChargeType() {
         return chargeType;
     }
 
-    public void setChargeType(String chargeType) {
-        this.chargeType = chargeType;
-    }
-
     public Integer getTransferable() {
         return transferable;
-    }
-
-    public void setTransferable(Integer transferable) {
-        this.transferable = transferable;
     }
 }

@@ -43,7 +43,7 @@ class BusManagerTest {
                 .filter(station -> station.getName().equals("Bangalore")).findFirst().get();
 
         List<Trip> trips = commerceService.getTrips(chennaiStation.getCode()
-                , bangaloreStation.getCode(), LocalDate.now().plusDays(1L));
+                , bangaloreStation.getCode(), LocalDate.now().plusDays(2L));
 
         Trip trip = trips.get(0);
 

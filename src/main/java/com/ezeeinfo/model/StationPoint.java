@@ -2,85 +2,61 @@ package com.ezeeinfo.model;
 
 public class StationPoint {
 
-    private String code;
-    private String name;
-    private String latitude;
-    private String longitude;
-    private String address;
-    private String landmark;
-    private String number;
-    private String dateTime;
-    private Integer fare;
+    private final String code;
+    private final String name;
+    private final String latitude;
+    private final String longitude;
+    private final String address;
+    private final String landmark;
+    private final String number;
+    private final String dateTime;
+    private final Integer fare;
+
+    public StationPoint(String code, String name, String latitude, String longitude, String address, String landmark, String number, String dateTime, Integer fare) {
+        this.code = code;
+        this.name = name;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.address = address;
+        this.landmark = landmark;
+        this.number = number;
+        this.dateTime = dateTime;
+        this.fare = fare;
+    }
 
     public String getCode() {
         return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getLatitude() {
         return latitude;
-    }
-
-    public void setLatitude(String latitude) {
-        this.latitude = latitude;
     }
 
     public String getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(String longitude) {
-        this.longitude = longitude;
-    }
-
     public String getAddress() {
         return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
     }
 
     public String getLandmark() {
         return landmark;
     }
 
-    public void setLandmark(String landmark) {
-        this.landmark = landmark;
-    }
-
     public String getNumber() {
         return number;
-    }
-
-    public void setNumber(String number) {
-        this.number = number;
     }
 
     public String getDateTime() {
         return dateTime;
     }
 
-    public void setDateTime(String dateTime) {
-        this.dateTime = dateTime;
-    }
-
     public Integer getFare() {
         return fare;
-    }
-
-    public void setFare(Integer fare) {
-        this.fare = fare;
     }
 }

@@ -4,40 +4,28 @@ import java.util.List;
 
 public class ToStation {
 
-    private String name;
-    private String code;
-    private String dateTime;
-    private List<StationPoint> stationPoint = null;
+    private final String name;
+    private final String code;
+    private final String dateTime;
+    private final List<StationPoint> stationPoint;
+
+    public ToStation(String name, String code, String dateTime, List<StationPoint> stationPoint) {
+        this.name = name;
+        this.code = code;
+        this.dateTime = dateTime;
+        this.stationPoint = stationPoint;
+    }
 
     public String getName() {
         return name;
     }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getCode() {
         return code;
     }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
     public String getDateTime() {
         return dateTime;
     }
-
-    public void setDateTime(String dateTime) {
-        this.dateTime = dateTime;
-    }
-
     public List<StationPoint> getStationPoint() {
         return stationPoint;
-    }
-
-    public void setStationPoint(List<StationPoint> stationPoint) {
-        this.stationPoint = stationPoint;
     }
 }
