@@ -1,12 +1,16 @@
 package com.ezeeinfo.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class TicketTransferTerms {
 
     private final Integer chargeAmount;
     private final String chargeType;
     private final Integer transferable;
-
-    public TicketTransferTerms(Integer chargeAmount, String chargeType, Integer transferable) {
+    @JsonCreator
+    public TicketTransferTerms(@JsonProperty("chargeAmount") Integer chargeAmount, @JsonProperty("chargeType") String chargeType,
+                               @JsonProperty("transferable") Integer transferable) {
         this.chargeAmount = chargeAmount;
         this.chargeType = chargeType;
         this.transferable = transferable;

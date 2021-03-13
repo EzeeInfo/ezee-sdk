@@ -42,7 +42,7 @@ public class BusManager {
                 .connectTimeout(Duration.ofSeconds(10)).build();
 
 
-        Convertor convertor = new Convertor(this.objectMapper, this.httpClient);
+        JsonConvertor convertor = new JsonConvertor(this.objectMapper, this.httpClient);
 
         String token = getToken(namespaceCode, convertor);
         this.commerceService = new CommerceService(url, token, convertor);
@@ -54,11 +54,10 @@ public class BusManager {
         return new BusManagerBuilder();
     }
 
-    private String getToken(String namespaceCode, Convertor convertor) throws IOException, BusManagerException {
+    private String getToken(String namespaceCode, JsonConvertor convertor) throws IOException, BusManagerException {
         final StringBuilder authUrl = new StringBuilder(this.url + "/auth/getGuestAuthToken?namespaceCode="
                 + namespaceCode + "&devicemedium=WEB&authenticationTypeCode=BITSUP");
 
-        System.out.println(authUrl);
 
         HttpRequest request = HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofString(""))
                 .uri(URI.create(authUrl.toString())).setHeader("Content-Type", "application/json").build();
@@ -105,12 +104,16 @@ public class BusManager {
         }
     }
 
-    static class Convertor {
+    /**
+     * This uses parser and object mapper to find and abstract objects from response.
+     * As per Ezeeinfo, status -> 1 contains proper data, this is checked using parser and mapped using objectmapper , excluding status -> 0 while checking.
+     */
+    static class JsonConvertor {
 
         private final ObjectMapper objectMapper;
         private final HttpClient httpClient;
 
-        private Convertor(final ObjectMapper objectMapper, final HttpClient httpClient) {
+        private JsonConvertor(final ObjectMapper objectMapper, final HttpClient httpClient) {
             this.objectMapper = objectMapper;
             this.httpClient = httpClient;
         }
@@ -129,7 +132,7 @@ public class BusManager {
             return value;
         }
 
-        <T> List<T> getDataAsList(final HttpRequest request, Class<T> clazz) throws BusManagerException, IOException {
+        <T> List<T> getListOfObjects(final HttpRequest request, Class<T> clazz) throws BusManagerException, IOException {
             List<T> objects = new ArrayList<>();
             try (JsonParser jsonParser = getJsonParser(request)) {
                 while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
@@ -140,7 +143,7 @@ public class BusManager {
             return objects;
         }
 
-        <T> Map<String, List<T>> getDataAsMapOfLists(final HttpRequest request, Class<T> clazz) throws BusManagerException, IOException {
+        <T> Map<String, List<T>> getMapOfLists(final HttpRequest request, Class<T> clazz) throws BusManagerException, IOException {
             Map<String, List<T>> routesMap = new HashMap<>();
             try (JsonParser jsonParser = getJsonParser(request)) {
                 Map<String, List<T>> rM = new HashMap<>();
@@ -168,11 +171,22 @@ public class BusManager {
             return routesMap;
         }
 
+        <T> T getData(final HttpRequest request,Class<T> clazz) throws BusManagerException, IOException {
+            T routesMap = null;
+            try (JsonParser jsonParser = getJsonParser(request)) {
+                while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
+                    routesMap = objectMapper
+                            .readValue(jsonParser, clazz);
+                }
+            }
+            return routesMap;
+        }
+
         private JsonParser getJsonParser(final HttpRequest request) throws BusManagerException {
 
             String errorCode = null;
             String errorDesc = null;
-            JsonParser jsonParser = null;
+            JsonParser jsonParser;
             try {
                 HttpResponse<String> response = this.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 //send request

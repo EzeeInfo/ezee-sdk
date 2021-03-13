@@ -1,6 +1,7 @@
 package com.ezeeinfo.client;
 
 import com.ezeeinfo.exception.BusManagerException;
+import com.ezeeinfo.model.BusMap;
 import com.ezeeinfo.model.Point;
 import com.ezeeinfo.model.Station;
 import com.ezeeinfo.model.Trip;
@@ -19,10 +20,10 @@ public final class CommerceService {
 
     private final String url;
     private final String token;
-    private final BusManager.Convertor convertor;
+    private final BusManager.JsonConvertor convertor;
 
 
-    CommerceService(final String url, final String token, final BusManager.Convertor convertor) {
+    CommerceService(final String url, final String token, final BusManager.JsonConvertor convertor) {
 
 
         this.url = url;
@@ -56,7 +57,7 @@ public final class CommerceService {
                 .setHeader("Content-Type", "application/json")
                 .build();
 
-        return convertor.getDataAsList(request, Station.class);
+        return convertor.getListOfObjects(request, Station.class);
 
     }
 
@@ -74,7 +75,7 @@ public final class CommerceService {
                 .setHeader("Content-Type", "application/json")
                 .build();
 
-        return convertor.getDataAsMapOfLists(request, String.class);
+        return convertor.getMapOfLists(request, String.class);
     }
 
     public final List<Trip> getTrips(final String fromStationCode, final String toStationCode, final LocalDate journeyDate) throws IOException, InterruptedException, BusManagerException {
@@ -89,19 +90,19 @@ public final class CommerceService {
             dayOfMonth = "0" + monnth;
         }
 
-        StringBuilder stationUrl =
+        StringBuilder tripsUrl =
                 new StringBuilder(this.url + "/" + this.token + "/commerce/search/" + fromStationCode + "/" + toStationCode + "/" + journeyDate.getYear() + "-" + monnth + "-" + dayOfMonth);
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(stationUrl.toString()))
+                .uri(URI.create(tripsUrl.toString()))
                 .setHeader("Content-Type", "application/json")
                 .build();
 
-        return convertor.getDataAsList(request, Trip.class);
+        return convertor.getListOfObjects(request, Trip.class);
     }
 
 
-    public final Map<String, Object> getBusMap(final String tripCode, final String fromStationCode, final String toStationCode, final LocalDate journeyDate) throws IOException, InterruptedException, BusManagerException {
+    public final BusMap getBusMap(final String tripCode, final String fromStationCode, final String toStationCode, final LocalDate journeyDate) throws IOException, InterruptedException, BusManagerException {
         String busMap = null;
         String value = String.valueOf(journeyDate.getMonth().getValue());
         if (value.length() == 1) {
@@ -113,15 +114,15 @@ public final class CommerceService {
             dayOfMonth = "0" + value;
         }
 
-        StringBuilder stationUrl =
+        StringBuilder busMapUrl =
                 new StringBuilder(this.url + "/" + this.token + "/commerce/busmap/" + tripCode + "/" + fromStationCode + "/" + toStationCode + "/" + journeyDate.getYear() + "-" + value + "-" + dayOfMonth);
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(stationUrl.toString()))
+                .uri(URI.create(busMapUrl.toString()))
                 .setHeader("Content-Type", "application/json")
                 .build();
 
-        return convertor.getDataAsMap(request);
+        return convertor.getData(request, BusMap.class);
     }
 
 

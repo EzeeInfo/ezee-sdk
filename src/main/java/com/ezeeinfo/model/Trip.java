@@ -1,7 +1,6 @@
 package com.ezeeinfo.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDate;
@@ -11,7 +10,7 @@ import java.util.List;
 public class Trip {
 
     private final String tripCode;
-    private  final LocalDate travelDate;
+    private final LocalDate travelDate;
     private final String tripStageCode;
     private final Integer bookedSeatCount;
     private final Integer blockedSeatCount;
@@ -28,8 +27,26 @@ public class Trip {
     private final List<Object> activities;
     private final List<ViaStation> viaStations;
     private final TicketTransferTerms ticketTransferTerms;
-@JsonCreator
-    public Trip(@JsonProperty("tripCode")String tripCode,@JsonProperty("travelDate") LocalDate travelDate, @JsonProperty("tripStageCode") String tripStageCode,@JsonProperty("bookedSeatCount") Integer bookedSeatCount,@JsonProperty("blockedSeatCount") Integer blockedSeatCount,@JsonProperty("availableSeatCount") Integer availableSeatCount,@JsonProperty("travelStopCount") Integer travelStopCount,@JsonProperty("stageFare") List<StageFare> stageFare,@JsonProperty("travelTime") String travelTime,@JsonProperty("bus") Bus bus,@JsonProperty("schedule") Schedule schedule,@JsonProperty("fromStation") FromStation fromStation,@JsonProperty("toStation") ToStation toStation, @JsonProperty("tripStatus") TripStatus tripStatus, @JsonProperty("amenities") List<Amenity> amenities, @JsonProperty("activities")List<Object> activities, @JsonProperty("viaStations") List<ViaStation> viaStations, @JsonProperty("ticketTransferTerms") TicketTransferTerms ticketTransferTerms) {
+
+    @JsonCreator
+    public Trip(@JsonProperty("tripCode") String tripCode,
+                @JsonProperty("travelDate") LocalDate travelDate,
+                @JsonProperty("tripStageCode") String tripStageCode,
+                @JsonProperty("bookedSeatCount") Integer bookedSeatCount,
+                @JsonProperty("blockedSeatCount") Integer blockedSeatCount,
+                @JsonProperty("availableSeatCount") Integer availableSeatCount,
+                @JsonProperty("travelStopCount") Integer travelStopCount,
+                @JsonProperty("stageFare") List<StageFare> stageFare,
+                @JsonProperty("travelTime") String travelTime,
+                @JsonProperty("bus") Bus bus,
+                @JsonProperty("schedule") Schedule schedule,
+                @JsonProperty("fromStation") FromStation fromStation,
+                @JsonProperty("toStation") ToStation toStation,
+                @JsonProperty("tripStatus") TripStatus tripStatus,
+                @JsonProperty("amenities") List<Amenity> amenities,
+                @JsonProperty("activities") List<Object> activities,
+                @JsonProperty("viaStations") List<ViaStation> viaStations,
+                @JsonProperty("ticketTransferTerms") TicketTransferTerms ticketTransferTerms) {
         this.tripCode = tripCode;
         this.travelDate = travelDate;
         this.tripStageCode = tripStageCode;
@@ -130,7 +147,6 @@ public class Trip {
     public List<ViaStation> getViaStations() {
         return this.viaStations;
     }
-
 
 
     public TicketTransferTerms getTicketTransferTerms() {

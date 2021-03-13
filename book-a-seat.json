@@ -1,0 +1,230 @@
+{
+	"info": {
+		"_postman_id": "be56a5ae-6b49-483e-b7e3-3130c98f957f",
+		"name": "Ezee",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"token\", jsonData.data.authToken);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{ezee-url}}/auth/getGuestAuthToken?namespaceCode=demobo&devicemedium=WEB&authenticationTypeCode=BITSUP",
+					"host": [
+						"{{ezee-url}}"
+					],
+					"path": [
+						"auth",
+						"getGuestAuthToken"
+					],
+					"query": [
+						{
+							"key": "namespaceCode",
+							"value": "demobo"
+						},
+						{
+							"key": "devicemedium",
+							"value": "WEB"
+						},
+						{
+							"key": "authenticationTypeCode",
+							"value": "BITSUP"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Stations",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"",
+							"console.log(jsonData);",
+							"",
+							"var chennaiStation = jsonData.data.find(function(item){",
+							"    return item.name == \"Chennai\";         ",
+							"});",
+							"",
+							"postman.setEnvironmentVariable(\"chennaiStationCode\", chennaiStation.code)",
+							"",
+							"var trichyStation = jsonData.data.find(function(item){",
+							"    return item.name == \"Trichy\";         ",
+							"});",
+							"",
+							"postman.setEnvironmentVariable(\"trichyStationCode\", trichyStation.code)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{ezee-url}}/{{token}}/commerce/station",
+					"host": [
+						"{{ezee-url}}"
+					],
+					"path": [
+						"{{token}}",
+						"commerce",
+						"station"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Route",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{ezee-url}}/{{token}}/commerce/route",
+					"host": [
+						"{{ezee-url}}"
+					],
+					"path": [
+						"{{token}}",
+						"commerce",
+						"route"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Trips",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"",
+							"postman.setEnvironmentVariable(\"tripCode\", jsonData.data[0].tripCode);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{ezee-url}}/{{token}}/commerce/search/{{chennaiStationCode}}/{{trichyStationCode}}/2021-03-15",
+					"host": [
+						"{{ezee-url}}"
+					],
+					"path": [
+						"{{token}}",
+						"commerce",
+						"search",
+						"{{chennaiStationCode}}",
+						"{{trichyStationCode}}",
+						"2021-03-15"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Bus Map",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{ezee-url}}/{{token}}/commerce/busmap/{{tripCode}}/{{chennaiStationCode}}/{{trichyStationCode}}/2021-03-15",
+					"host": [
+						"{{ezee-url}}"
+					],
+					"path": [
+						"{{token}}",
+						"commerce",
+						"busmap",
+						"{{tripCode}}",
+						"{{chennaiStationCode}}",
+						"{{trichyStationCode}}",
+						"2021-03-15"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "chennaiStation",
+			"value": "chennaiStation"
+		},
+		{
+			"key": "chennaiStation",
+			"value": ""
+		},
+		{
+			"key": "trichyStation",
+			"value": ""
+		},
+		{
+			"key": "chennaiStationCode",
+			"value": ""
+		},
+		{
+			"key": "trichyStationCode",
+			"value": ""
+		}
+	]
+}

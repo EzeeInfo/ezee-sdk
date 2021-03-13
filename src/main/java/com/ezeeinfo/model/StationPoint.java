@@ -1,5 +1,8 @@
 package com.ezeeinfo.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class StationPoint {
 
     private final String code;
@@ -11,8 +14,16 @@ public class StationPoint {
     private final String number;
     private final String dateTime;
     private final Integer fare;
-
-    public StationPoint(String code, String name, String latitude, String longitude, String address, String landmark, String number, String dateTime, Integer fare) {
+    @JsonCreator
+    public StationPoint(@JsonProperty("code") String code,
+                        @JsonProperty("name") String name,
+                        @JsonProperty("latitude") String latitude,
+                        @JsonProperty("longitude") String longitude,
+                        @JsonProperty("address") String address,
+                        @JsonProperty("landmark") String landmark,
+                        @JsonProperty("number") String number,
+                        @JsonProperty("dateTime") String dateTime,
+                        @JsonProperty("fare") Integer fare) {
         this.code = code;
         this.name = name;
         this.latitude = latitude;

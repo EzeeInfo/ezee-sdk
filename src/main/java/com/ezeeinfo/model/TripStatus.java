@@ -1,6 +1,7 @@
 package com.ezeeinfo.model;
 
 import com.ezeeinfo.client.deserializer.TripStatusDeserialzer;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
