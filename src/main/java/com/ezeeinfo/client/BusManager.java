@@ -54,15 +54,11 @@ public class BusManager {
         return new BusManagerBuilder();
     }
 
-    private String getToken(String namespaceCode, Convertor convertor) throws IOException, InterruptedException, BusManagerException {
-
-        String errorCode = null;
-        String errorDesc = null;
-
-
-        String token = null;
+    private String getToken(String namespaceCode, Convertor convertor) throws IOException, BusManagerException {
         final StringBuilder authUrl = new StringBuilder(this.url + "/auth/getGuestAuthToken?namespaceCode="
                 + namespaceCode + "&devicemedium=WEB&authenticationTypeCode=BITSUP");
+
+        System.out.println(authUrl);
 
         HttpRequest request = HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofString(""))
                 .uri(URI.create(authUrl.toString())).setHeader("Content-Type", "application/json").build();
